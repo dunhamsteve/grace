@@ -20,6 +20,8 @@ import Grace.Syntax (Builtin, Operator, Scalar, Syntax)
 import Grace.Type (Type)
 
 import qualified Data.Aeson as Aeson
+import qualified Data.Aeson.KeyMap as KeyMap
+import qualified Data.Aeson.Key as Key
 import qualified Data.HashMap.Strict.InsOrd as HashMap
 import qualified Data.Sequence as Seq
 import qualified Grace.Syntax as Syntax
@@ -104,7 +106,7 @@ instance IsString Value where
 instance FromJSON Value where
     parseJSON (Aeson.Object object) = do
         values <- traverse parseJSON object
-        pure (Record (HashMap.fromHashMap values))
+        pure (Record (HashMap.mapKeys Key.toText (HashMap.fromHashMap (KeyMap.toHashMap values))))
     parseJSON (Aeson.Array array) = do
         values <- traverse parseJSON array
         pure (List (Seq.fromList (toList values)))
